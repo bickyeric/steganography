@@ -18,8 +18,12 @@ class Activity:
   path = "./dst.png"
 
   def __init__(self, path):
+    self.master.title('AES + Steganography')
     self.image = cv2.imread(path)
     self.updateImage()
+
+    openBtn = tk.Button(self.master, text = 'Open', command = self.openImage)
+    openBtn.pack()
 
     btnFrame = tk.Frame(self.master)
     btnFrame.pack()
@@ -28,7 +32,7 @@ class Activity:
     decodeBtn = tk.Button(btnFrame, text = 'Decode', command = self.decode)
     decodeBtn.pack(side = tk.LEFT)
 
-    saveBtn = tk.Button(self.master, text = 'Save', command = self.save)
+    saveBtn = tk.Button(self.master, text = 'Save', command = self.saveImage)
     saveBtn.pack()
 
     tk.Label(self.master, text='Key').pack()
@@ -62,14 +66,26 @@ class Activity:
     self.image = obj.image
 
     self.updateImage()
+    messagebox.showinfo("Info", "Encoded")
 
   def decode(self):
     obj = LSB(self.image)
     self.messageInput.delete(1.0, tk.END)
     self.messageInput.insert(tk.INSERT, obj.extract())
 
-  def save(self):
+  def openImage(self):
+    path = askopenfilename()
+    if not isinstance(path, str):
+      return
+
+    self.image = cv2.imread(path)
+    self.updateImage()
+
+  def saveImage(self):
     path = asksaveasfilename(title = "Select file",filetypes=[("png files", "*.png")])
+    if not isinstance(path, str):
+      return
+
     obj = LSB(self.image)
     obj.save(path)
 
