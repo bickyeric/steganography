@@ -6,6 +6,7 @@ from tkinter.filedialog import askopenfilename, asksaveasfilename
 from tkinter import messagebox
 from PIL import Image, ImageTk
 from lsb import LSB
+from aes import AESCipher
 
 class Activity:
   master = tk.Tk()
@@ -56,12 +57,27 @@ class Activity:
       self.imgPanel.configure(image = image)
       self.imgPanel.image = image
 
-  def encode(self):
+  def cipher(self):
     key = self.keyInput.get()
+    if len(key) != 16:
+      messagebox.showwarning("Warning","Key must be 16 character")
+      return
+
+    return AESCipher(self.keyInput.get())
+
+  def encode(self):
     message = self.messageInput.get("1.0",'end-1c')
+    if len(message)%16 != 0:
+      messagebox.showwarning("Warning","Secret Message length must be multiple of 16")
+      return
+
+    cipher = self.cipher()
+    if cipher == None:
+      return
+    cipherText = cipher.encrypt(message)
 
     obj = LSB(self.image)
-    obj.embed(message)
+    obj.embed(cipherText)
     self.messageInput.delete(1.0, tk.END)
     self.image = obj.image
 
@@ -69,9 +85,17 @@ class Activity:
     messagebox.showinfo("Info", "Encoded")
 
   def decode(self):
+    cipher = self.cipher()
+    if cipher == None:
+      return
+
     obj = LSB(self.image)
+
+    cipherText = obj.extract()
+    msg = cipher.decrypt(cipherText)
+
     self.messageInput.delete(1.0, tk.END)
-    self.messageInput.insert(tk.INSERT, obj.extract())
+    self.messageInput.insert(tk.INSERT, msg)
 
   def openImage(self):
     path = askopenfilename()
