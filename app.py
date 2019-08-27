@@ -107,7 +107,7 @@ class Activity:
 
   def saveImage(self):
     path = asksaveasfilename(title = "Select file",filetypes=[("png files", "*.png")])
-    if not isinstance(path, str):
+    if path == '':
       return
 
     obj = LSB(self.image)
