@@ -2,6 +2,7 @@
 
 import cv2
 import tkinter as tk
+import numpy as np
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 from tkinter import messagebox
 from PIL import Image, ImageTk
@@ -33,8 +34,13 @@ class Activity:
     decodeBtn = tk.Button(btnFrame, text = 'Decode', command = self.decode)
     decodeBtn.pack(side = tk.LEFT)
 
-    saveBtn = tk.Button(self.master, text = 'Save', command = self.saveImage)
-    saveBtn.pack()
+    savebtnFrame = tk.Frame(self.master)
+    savebtnFrame.pack()
+    saveBtn = tk.Button(savebtnFrame, text = 'Save Image', command = self.saveImage)
+    saveBtn.pack(side = tk.LEFT)
+
+    saveValueBtn = tk.Button(savebtnFrame, text = 'Save Value', command = self.saveValue)
+    saveValueBtn.pack(side = tk.LEFT)
 
     tk.Label(self.master, text='Key').pack()
     self.keyInput = tk.Entry(self.master)
@@ -105,10 +111,24 @@ class Activity:
     self.image = cv2.imread(path)
     self.updateImage()
 
+  def saveValue(self):
+    path = asksaveasfilename(title = "Select file")
+    if path == '':
+      return
+
+    np.savetxt(path+'_blue.csv', self.image[:, :, 0], delimiter=',', fmt='%d')
+    np.savetxt(path+'_green.csv', self.image[:, :, 1], delimiter=',', fmt='%d')
+    np.savetxt(path+'_red.csv', self.image[:, :, 2], delimiter=',', fmt='%d')
+
+    messagebox.showinfo("Info", "Saved")
+
   def saveImage(self):
     path = asksaveasfilename(title = "Select file",filetypes=[("png files", "*.png")])
     if path == '':
       return
+
+    if ".png" not in path:
+      path = path + ".png"
 
     obj = LSB(self.image)
     obj.save(path)
