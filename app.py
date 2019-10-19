@@ -19,9 +19,9 @@ class Activity:
   messageInput = None
   path = "./dst.png"
 
-  def __init__(self, path):
+  def __init__(self):
     self.master.title('AES + Steganography')
-    self.image = cv2.imread(path)
+    self.image = np.zeros(shape=[100, 100, 3], dtype=np.uint8)
     self.updateImage()
 
     openBtn = tk.Button(self.master, text = 'Open', command = self.openImage)
@@ -139,8 +139,5 @@ class Activity:
     self.master.mainloop()
 
 if __name__ == "__main__":
-  path = askopenfilename()
-  if not isinstance(path, str):
-    exit(0)
-  app = Activity(path)
+  app = Activity()
   app.startLoop()
