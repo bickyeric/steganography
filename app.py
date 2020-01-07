@@ -74,8 +74,7 @@ class Activity:
   def encode(self):
     message = self.messageInput.get("1.0",'end-1c')
     if len(message)%16 != 0:
-      messagebox.showwarning("Warning","Secret Message length must be multiple of 16")
-      return
+      message += (" " * (16-len(message)%16))
 
     cipher = self.cipher()
     if cipher == None:
